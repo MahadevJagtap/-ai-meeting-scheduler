@@ -9,13 +9,13 @@ python-multipart==0.0.20
 python-dotenv==1.0.1
 httpx==0.28.1
 
-# LangChain / LangGraph / Groq
-langgraph>=0.2.60
-langgraph-checkpoint-postgres>=2.0.12
-langchain>=0.3.14
-langchain-groq>=0.2.4
+# LangChain / LangGraph / Groq (Updated: 2026-02-25)
+langgraph
+langgraph-checkpoint-postgres
+langchain
+langchain-groq
 langchain-core>=0.3.33
-groq>=0.15.0
+groq
 
 # Database (PostgreSQL)
 sqlalchemy[asyncio]==2.0.36
