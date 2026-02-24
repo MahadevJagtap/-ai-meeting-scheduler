@@ -107,11 +107,24 @@ app.include_router(chat_router)
 
 @app.get("/health", tags=["system"])
 async def health_check():
-    """Simple liveness probe."""
+    """Simple liveness probe with DB connectivity check."""
+    from sqlalchemy import text
+    from app.database import engine
+    
+    db_status = "unknown"
+    try:
+        async with engine.connect() as conn:
+            await conn.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception as exc:
+        db_status = f"unreachable ({exc})"
+        logger.error(f"Health check DB failure: {exc}")
+
     return {
-        "status": "healthy",
+        "status": "healthy" if db_status == "connected" else "degraded",
         "service": "ai-meeting-scheduler",
-        "version": "1.0.0",
+        "database": db_status,
+        "version": "1.0.1",
     }
 
 
