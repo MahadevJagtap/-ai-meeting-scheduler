@@ -48,7 +48,12 @@ def _get_calendar_service():
 
     # 2. Try loading from credentials string as JSON OR path
     try:
-        # Check if it's a file path
+        if not creds_val or not creds_val.strip() or creds_val == "{}":
+            raise ValueError(
+                "Google Calendar credentials are missing. "
+                "Please set GOOGLE_CALENDAR_CREDENTIALS_JSON in your environment variables."
+            )
+
         actual_json = creds_val
         if os.path.exists(creds_val):
             with open(creds_val, "r") as f:
