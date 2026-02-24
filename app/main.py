@@ -143,7 +143,7 @@ async def health_check():
         "groq_api": groq_status,
         "calendar": calendar_status,
         "environment": settings.app_env,
-        "version": "1.0.2",
+        "version": "1.0.3",
     }
 
 
