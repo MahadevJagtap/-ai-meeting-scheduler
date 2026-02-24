@@ -107,10 +107,12 @@ app.include_router(chat_router)
 
 @app.get("/health", tags=["system"])
 async def health_check():
-    """Simple liveness probe with DB connectivity check."""
+    """Diagnostic probe for all core integrations."""
     from sqlalchemy import text
     from app.database import engine
+    from app.services.calendar_service import _get_calendar_service
     
+    # 1. Database Check
     db_status = "unknown"
     try:
         async with engine.connect() as conn:
@@ -118,13 +120,30 @@ async def health_check():
         db_status = "connected"
     except Exception as exc:
         db_status = f"unreachable ({exc})"
-        logger.error(f"Health check DB failure: {exc}")
+
+    # 2. Groq Check
+    groq_status = "configured" if settings.groq_api_key else "missing API key"
+    
+    # 3. Calendar Check
+    calendar_status = "unknown"
+    try:
+        _get_calendar_service()
+        calendar_status = "ready"
+    except Exception as exc:
+        calendar_status = f"error ({exc})"
+
+    overall = "healthy"
+    if db_status != "connected" or groq_status != "configured" or "error" in calendar_status:
+        overall = "degraded"
 
     return {
-        "status": "healthy" if db_status == "connected" else "degraded",
+        "status": overall,
         "service": "ai-meeting-scheduler",
         "database": db_status,
-        "version": "1.0.1",
+        "groq_api": groq_status,
+        "calendar": calendar_status,
+        "environment": settings.app_env,
+        "version": "1.0.2",
     }
 
 
