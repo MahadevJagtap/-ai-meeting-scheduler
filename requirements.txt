@@ -1,0 +1,37 @@
+# Core Framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.5
+pydantic-settings==2.7.1
+jinja2==3.1.5
+python-multipart==0.0.20
+python-dotenv==1.0.1
+httpx==0.28.1
+
+# LangChain / LangGraph / Groq
+langgraph==0.2.60
+langgraph-checkpoint-postgres==2.0.12
+langchain==0.3.14
+langchain-groq==0.2.4
+langchain-core==0.3.29
+groq==0.15.0
+
+# Database (PostgreSQL)
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+psycopg[binary,pool]==3.2.4
+
+# Google Calendar API
+google-api-python-client==2.159.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+
+# Communication
+twilio==9.4.3
+aiosmtplib==3.0.2
+
+# Background Scheduler
+apscheduler==3.10.4
+
+# Utilities
+python-dateutil==2.9.0

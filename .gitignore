@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+pa/
+Include/
+Lib/
+Scripts/
+pyvenv.cfg
+.venv/
+env/
+venv/
+ENV/
+
+# Environment
+.env
+token.json
+credentials.json
+
+# Database
+checkpoints.db
+*.db
+
+# Logs
+*.log
+crash_log.txt
+crash_report.txt
+server_log*.txt
+server_output.txt
+test_output*.txt
+
+# IDEs
+.vscode/
+.idea/
+.DS_Store
