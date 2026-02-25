@@ -78,18 +78,77 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── Dashboard ────────────────────────────────────────────── */
 async function loadDashboard() {
+  const userId = document.getElementById('s-user-id')?.value?.trim() || 'default_user';
+
+  // 1. Sidebar Health Check
   try {
-    const res = await fetch(`${API_BASE}/health`);
-    const data = await res.json();
-    const el = document.getElementById('system-status');
-    if (el) {
-      el.textContent = data.status === 'healthy' ? '🟢 Online' : '🔴 Offline';
-      el.style.color = data.status === 'healthy' ? 'var(--green)' : 'var(--red)';
+    const healthRes = await fetch(`${API_BASE}/health`);
+    const healthData = await healthRes.json();
+    const sidebarEl = document.getElementById('sidebar-status');
+    if (sidebarEl) {
+      sidebarEl.textContent = healthData.status === 'ok' ? 'All Systems Online' : 'Service Check';
+      sidebarEl.className = healthData.status === 'ok' ? 'status-online' : 'status-warning';
     }
-  } catch {
-    const el = document.getElementById('system-status');
-    if (el) { el.textContent = '🔴 Offline'; el.style.color = 'var(--red)'; }
+  } catch (err) {
+    console.warn("Health check failed:", err);
+    const sidebarEl = document.getElementById('sidebar-status');
+    if (sidebarEl) sidebarEl.textContent = 'Connection Error';
   }
+
+  // 2. Dashboard Metrics & Meetings
+  try {
+    // CRITICAL: Added /api prefix to the route
+    const dashRes = await fetch(`${API_BASE}/api/dashboard/${userId}`);
+    if (!dashRes.ok) throw new Error(`Server returned ${dashRes.status}`);
+    const dashData = await dashRes.json();
+
+    // Update Meeting Count Card
+    const meetingCountEl = document.getElementById('dash-meeting-count');
+    const prefBadge = document.getElementById('dash-pref-count');
+    if (meetingCountEl) meetingCountEl.textContent = dashData.stats?.total_meetings || 0;
+    if (prefBadge) prefBadge.textContent = `${dashData.preferences?.count || 0} Preferences`;
+
+    // Update Calendar Connection Badge
+    const calBadge = document.getElementById('dash-cal-badge');
+    if (calBadge) {
+      const isConnected = dashData.systems?.calendar === 'connected';
+      calBadge.textContent = isConnected ? 'Connected ✅' : 'Not Connected ⚠️';
+      calBadge.className = 'stat-badge ' + (isConnected ? 'connected' : 'warning');
+    }
+
+    // Render Upcoming Meetings
+    renderMeetingList(dashData.meetings);
+
+  } catch (err) {
+    console.warn("Dashboard sync failed:", err);
+    const listEl = document.getElementById('upcoming-meetings-list');
+    if (listEl) {
+      listEl.innerHTML = `<div class="empty-meetings">⚠️ Sync Failed: ${err.message}</div>`;
+    }
+  }
+}
+
+function renderMeetingList(meetings) {
+  const listEl = document.getElementById('upcoming-meetings-list');
+  if (!listEl) return;
+
+  if (!meetings || meetings.length === 0) {
+    listEl.innerHTML = '<div class="empty-meetings">📅 No upcoming meetings found for the next 7 days.</div>';
+    return;
+  }
+
+  listEl.innerHTML = meetings.map(m => `
+    <div class="meeting-item" onclick="window.open('${m.link}', '_blank')">
+      <div class="meeting-date-box">
+        <span class="meeting-day">${m.display_month}</span>
+        <span class="meeting-num">${m.display_day}</span>
+      </div>
+      <div class="meeting-info">
+        <div class="meeting-title">${m.summary}</div>
+        <div class="meeting-time">🕑 ${m.display_time} (UTC)</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 /* ── Schedule Page ────────────────────────────────────────── */

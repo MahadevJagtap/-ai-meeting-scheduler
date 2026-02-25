@@ -25,6 +25,7 @@ from app.database import init_db
 from app.routes.chat import router as chat_router
 from app.routes.preferences import router as preferences_router
 from app.routes.scheduling import router as scheduling_router
+from app.routes.dashboard import router as dashboard_router
 from app.services.reminder_service import start_scheduler, stop_scheduler
 
 # ── Logging ───────────────────────────────────────────────────
@@ -50,8 +51,8 @@ async def lifespan(app: FastAPI):
     try:
         await init_db()
         logger.info("✅ Database initialized")
-    except Exception:
-        logger.exception("⚠️  Database initialization failed (will continue)")
+    except Exception as exc:
+        logger.error("⚠️  Database initialization failed: %s — preferences will be unavailable", exc)
 
     # Start the APScheduler for autonomous reminders
     try:
@@ -100,19 +101,16 @@ templates = Jinja2Templates(directory=os.path.join(_BASE_DIR, "templates"))
 app.include_router(scheduling_router)
 app.include_router(preferences_router)
 app.include_router(chat_router)
+app.include_router(dashboard_router)
 
 
 # ── Health Check ──────────────────────────────────────────────
 
 
-@app.get("/health", tags=["system"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["system"])
 async def health_check():
-    """Simple liveness probe."""
-    return {
-        "status": "healthy",
-        "service": "ai-meeting-scheduler",
-        "version": "1.0.0",
-    }
+    """Lightweight liveness probe for uptime monitoring (e.g. UptimeRobot)."""
+    return {"status": "ok"}
 
 
 # ── Frontend Route ────────────────────────────────────────────

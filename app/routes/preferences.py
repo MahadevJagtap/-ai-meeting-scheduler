@@ -29,7 +29,14 @@ async def create_preference(payload: UserPreferenceCreate) -> UserPreferenceOut:
             user_id=payload.user_id,
             preference_text=payload.preference_text,
         )
+        if row is None:
+            raise HTTPException(
+                status_code=503,
+                detail="Database is temporarily unavailable. Please try again later.",
+            )
         return UserPreferenceOut.model_validate(row)
+    except HTTPException:
+        raise
     except Exception as exc:
         logger.exception("Failed to create preference")
         raise HTTPException(status_code=500, detail=str(exc))

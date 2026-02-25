@@ -1,14 +1,15 @@
 """
-Async PostgreSQL database layer with pgvector support.
+Async PostgreSQL database layer.
 
 Provides:
 - Async SQLAlchemy engine and session factory.
 - ORM models for `user_preferences` and `scheduled_meetings`.
-- `init_db()` to create tables and install the pgvector extension.
+- `init_db()` to create tables.
 """
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 
 from sqlalchemy import (
@@ -28,16 +29,29 @@ from sqlalchemy.orm import DeclarativeBase
 
 from app.config import get_settings
 
+logger = logging.getLogger(__name__)
+
 # ── Engine & Session ──────────────────────────────────────────
 
 _settings = get_settings()
 
+_db_url = _settings.async_database_url
+
+# Log a masked version of the URL for diagnostics
+_masked = _db_url
+if "@" in _masked:
+    _masked = _masked.split("@", 1)
+    _masked = f"***@{_masked[1]}"
+logger.info("Database URL (masked): %s", _masked)
+
 engine = create_async_engine(
-    _settings.database_url,
+    _db_url,
     echo=(_settings.app_env == "development"),
     pool_pre_ping=True,
     pool_size=5,
     max_overflow=10,
+    pool_timeout=10,
+    pool_recycle=300,
 )
 
 async_session_factory = async_sessionmaker(
@@ -56,7 +70,7 @@ class Base(DeclarativeBase):
 
 
 class UserPreferenceRow(Base):
-    """Stores user scheduling preferences with an embedding vector for RAG."""
+    """Stores user scheduling preferences."""
 
     __tablename__ = "user_preferences"
 
@@ -88,6 +102,11 @@ class ScheduledMeetingRow(Base):
 
 
 async def init_db() -> None:
-    """Create all tables."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Create all tables. Logs detailed errors if connection fails."""
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables created successfully")
+    except Exception as exc:
+        logger.error("Database init_db failed: %s", exc, exc_info=True)
+        raise

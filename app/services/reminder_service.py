@@ -18,6 +18,7 @@ from sqlalchemy import select, update
 from app.config import get_settings
 from app.database import ScheduledMeetingRow, async_session_factory
 from app.tools.communication_tools import send_email, send_whatsapp
+from app.services.notification_service import send_instant_whatsapp
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +88,16 @@ async def schedule_reminders(
 
 async def _check_and_send_reminders() -> None:
     """Scan upcoming meetings and send due reminders."""
-    now = datetime.now(timezone.utc)
+    try:
+        await _do_check_reminders()
+    except Exception:
+        logger.exception("Reminder check failed (will retry next cycle)")
+
+
+async def _do_check_reminders() -> None:
+    """Inner logic — separated so we can wrap with try/except."""
+    # Use naive UTC (no tzinfo) because the DB column is TIMESTAMP WITHOUT TIME ZONE
+    now = datetime.utcnow()
 
     async with async_session_factory() as session:
         result = await session.execute(
@@ -99,7 +109,7 @@ async def _check_and_send_reminders() -> None:
         meetings = list(result.scalars().all())
 
     for meeting in meetings:
-        time_until = meeting.start_time.replace(tzinfo=timezone.utc) - now
+        time_until = meeting.start_time - now
 
         # 24-hour reminder (send between 24h and 23h before)
         if (
@@ -173,14 +183,12 @@ async def _send_reminder(
             except Exception:
                 logger.exception("Failed email reminder to %s for event %s", participant, meeting.event_id)
 
-        # WhatsApp reminder
-        if is_phone or is_email:
+        # WhatsApp reminder — only for phone numbers
+        if is_phone:
             try:
-                await send_whatsapp.ainvoke(
-                    {
-                        "to": participant,
-                        "message": f"\u23f0 {meeting.summary} in {time_label}\n{message}",
-                    }
+                await send_instant_whatsapp(
+                    to=participant,
+                    message=f"\u23f0 {meeting.summary} in {time_label}\n{message}",
                 )
             except Exception:
                 logger.exception("Failed WhatsApp reminder to %s for event %s", participant, meeting.event_id)
