@@ -27,7 +27,7 @@ async def embed_preference(user_id: str, preference_text: str) -> UserPreference
         row = UserPreferenceRow(
             user_id=user_id,
             preference_text=preference_text,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.utcnow(),
         )
 
         async with async_session_factory() as session:
