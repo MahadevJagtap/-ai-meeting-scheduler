@@ -104,9 +104,3 @@ The modern Glassmorphism frontend provides critical observability:
 - **Upcoming Feed**: Real-time sync with Google Calendar.
 - **Personal Context**: Visual count of active scheduling rules.
 
----
-
-## 👨‍💻 Engineering Team
-**Senior AI Engineer & Architect**: Managed via agentic workflow.
-
-*"Building the future of autonomous personal assistants, one agent at a time."*
