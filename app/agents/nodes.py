@@ -26,6 +26,7 @@ from app.tools.calendar_tools import (
     get_free_busy_slots,
 )
 from app.tools.communication_tools import send_email, send_whatsapp
+from app.services.notification_service import send_instant_whatsapp
 
 logger = logging.getLogger(__name__)
 
@@ -467,9 +468,7 @@ async def execute_scheduling(state: AgentState) -> dict:
             # WhatsApp notification (if it looks like a phone number or is the user's number)
             if recipient.startswith("+") or recipient.startswith("whatsapp:") or recipient == user_whatsapp:
                 try:
-                    await send_whatsapp.ainvoke(
-                        {"to": recipient, "message": confirmation_msg}
-                    )
+                    await send_instant_whatsapp(to=recipient, message=confirmation_msg)
                     if "whatsapp" not in notifications:
                         notifications.append("whatsapp")
                 except Exception:

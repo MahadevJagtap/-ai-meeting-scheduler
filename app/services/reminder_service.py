@@ -18,6 +18,7 @@ from sqlalchemy import select, update
 from app.config import get_settings
 from app.database import ScheduledMeetingRow, async_session_factory
 from app.tools.communication_tools import send_email, send_whatsapp
+from app.services.notification_service import send_instant_whatsapp
 
 logger = logging.getLogger(__name__)
 
@@ -185,11 +186,9 @@ async def _send_reminder(
         # WhatsApp reminder — only for phone numbers
         if is_phone:
             try:
-                send_whatsapp.invoke(
-                    {
-                        "to": participant,
-                        "message": f"\u23f0 {meeting.summary} in {time_label}\n{message}",
-                    }
+                await send_instant_whatsapp(
+                    to=participant,
+                    message=f"\u23f0 {meeting.summary} in {time_label}\n{message}",
                 )
             except Exception:
                 logger.exception("Failed WhatsApp reminder to %s for event %s", participant, meeting.event_id)
