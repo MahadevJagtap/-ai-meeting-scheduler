@@ -145,7 +145,10 @@ async def analyze_request(state: AgentState) -> dict:
             "date_range_start": start_dt,
             "date_range_end": end_dt,
             "urgency": parsed.get("urgency", "medium"),
-            "participants": parsed.get("participants", state.get("participants", [])),
+            "participants": list(set(
+                state.get("participants", []) +
+                parsed.get("participants", [])
+            )),
             "status": "retrieving",
             "messages": [
                 HumanMessage(content=state["user_request"]),
