@@ -83,12 +83,16 @@ async function loadDashboard() {
     const data = await res.json();
     const el = document.getElementById('system-status');
     if (el) {
-      el.textContent = data.status === 'healthy' ? '🟢 Online' : '🔴 Offline';
-      el.style.color = data.status === 'healthy' ? 'var(--green)' : 'var(--red)';
+      const isOnline = data.status === 'ok';
+      el.textContent = isOnline ? '🟢 Online' : '🔴 Offline';
+      el.style.color = isOnline ? 'var(--green)' : 'var(--red)';
     }
   } catch {
     const el = document.getElementById('system-status');
-    if (el) { el.textContent = '🔴 Offline'; el.style.color = 'var(--red)'; }
+    if (el) {
+      el.textContent = '🔴 Offline';
+      el.style.color = 'var(--red)';
+    }
   }
 }
 
