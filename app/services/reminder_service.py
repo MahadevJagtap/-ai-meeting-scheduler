@@ -87,7 +87,16 @@ async def schedule_reminders(
 
 async def _check_and_send_reminders() -> None:
     """Scan upcoming meetings and send due reminders."""
-    now = datetime.now(timezone.utc)
+    try:
+        await _do_check_reminders()
+    except Exception:
+        logger.exception("Reminder check failed (will retry next cycle)")
+
+
+async def _do_check_reminders() -> None:
+    """Inner logic — separated so we can wrap with try/except."""
+    # Use naive UTC (no tzinfo) because the DB column is TIMESTAMP WITHOUT TIME ZONE
+    now = datetime.utcnow()
 
     async with async_session_factory() as session:
         result = await session.execute(
@@ -99,7 +108,7 @@ async def _check_and_send_reminders() -> None:
         meetings = list(result.scalars().all())
 
     for meeting in meetings:
-        time_until = meeting.start_time.replace(tzinfo=timezone.utc) - now
+        time_until = meeting.start_time - now
 
         # 24-hour reminder (send between 24h and 23h before)
         if (
