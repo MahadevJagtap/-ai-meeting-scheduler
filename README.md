@@ -5,7 +5,15 @@
 [![Groq](https://img.shields.io/badge/llm-Groq%20LLaMA%203.3-green.svg)](https://groq.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-An advanced, multi-agent autonomous scheduling system designed for seamless calendar orchestration. This project leverages state-of-the-art Generative AI to transform natural language requests into production-ready calendar events, complete with automated multi-channel notifications and context-aware memory.
+---
+# 🤖 AI Meeting Scheduler — Enterprise-Grade Autonomous Assistant
+
+🌍 **Live Demo**: [ai-meeting-scheduler-xlwc.onrender.com](https://ai-meeting-scheduler-xlwc.onrender.com)  
+🚀 **Live API**: [ai-meeting-scheduler-xlwc.onrender.com/docs](https://ai-meeting-scheduler-xlwc.onrender.com/docs)  
+📘 **API Docs**: [Swagger UI](https://ai-meeting-scheduler-xlwc.onrender.com/docs)  
+🩺 **Health Check**: [/health](https://ai-meeting-scheduler-xlwc.onrender.com/health)
+
+A highly capable GenAI Personal Assistant designed for production environments. Built with **LangGraph**, **FastAPI**, and **APScheduler**, this agent understands natural language commands to manage your calendar, send notifications, and handle emails with enterprise-grade resilience.
 
 ---
 🚀 Live Demo
