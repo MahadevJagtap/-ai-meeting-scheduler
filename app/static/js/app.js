@@ -81,17 +81,37 @@ async function loadDashboard() {
   try {
     const res = await fetch(`${API_BASE}/health`);
     const data = await res.json();
-    const el = document.getElementById('system-status');
-    if (el) {
-      const isOnline = data.status === 'ok';
-      el.textContent = isOnline ? '🟢 Online' : '🔴 Offline';
-      el.style.color = isOnline ? 'var(--green)' : 'var(--red)';
+    const isOnline = data.status === 'ok';
+
+    // Sidebar status
+    const sidebarEl = document.getElementById('sidebar-status');
+    if (sidebarEl) sidebarEl.textContent = isOnline ? 'All Systems Online' : 'Service Degraded';
+
+    // Dashboard status card
+    const statusText = document.getElementById('dash-status-text');
+    const statusBadge = document.getElementById('dash-status-badge');
+    if (statusText) {
+      statusText.textContent = isOnline ? 'All Systems Operational' : 'Service Degraded';
+    }
+    if (statusBadge) {
+      statusBadge.textContent = isOnline ? 'Operational' : 'Degraded';
+      statusBadge.className = 'stat-badge ' + (isOnline ? 'operational' : 'warning');
+    }
+    // Calendar badge
+    const calBadge = document.getElementById('dash-cal-badge');
+    if (calBadge) {
+      calBadge.textContent = isOnline ? 'Connected ✅' : 'Checking…';
+      calBadge.className = 'stat-badge ' + (isOnline ? 'connected' : 'info');
     }
   } catch {
-    const el = document.getElementById('system-status');
-    if (el) {
-      el.textContent = '🔴 Offline';
-      el.style.color = 'var(--red)';
+    const sidebarEl = document.getElementById('sidebar-status');
+    if (sidebarEl) sidebarEl.textContent = 'Offline';
+    const statusText = document.getElementById('dash-status-text');
+    if (statusText) statusText.textContent = 'Unreachable';
+    const statusBadge = document.getElementById('dash-status-badge');
+    if (statusBadge) {
+      statusBadge.textContent = 'Offline';
+      statusBadge.className = 'stat-badge error';
     }
   }
 }

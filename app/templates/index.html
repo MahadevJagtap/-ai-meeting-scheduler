@@ -1,250 +1,324 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Meeting Scheduler</title>
-  <meta name="description" content="AI-powered meeting scheduler with Google Calendar, email, and WhatsApp notifications." />
+  <title>AI Meeting Scheduler — Dashboard</title>
+  <meta name="description"
+    content="AI-powered meeting scheduler with Google Calendar, email, and WhatsApp notifications." />
   <link rel="stylesheet" href="/static/css/style.css" />
 </head>
+
 <body>
 
-<!-- Animated Background -->
-<div class="bg-orbs">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
 
-<div class="layout">
+  <div class="layout">
 
-  <!-- ── Sidebar ────────────────────────────────────────── -->
-  <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-icon">🧠</div>
-      <div>
-        <div class="brand-title">AI Scheduler</div>
-        <div class="brand-sub">v1.0 · Powered by Groq</div>
-      </div>
-    </div>
-
-    <a class="nav-item active" data-page="dashboard">
-      <span class="nav-icon">🏠</span> Dashboard
-    </a>
-    <a class="nav-item" data-page="schedule">
-      <span class="nav-icon">📅</span> Schedule Meeting
-    </a>
-    <a class="nav-item" data-page="chat">
-      <span class="nav-icon">💬</span> Assistant Chat
-    </a>
-    <a class="nav-item" data-page="preferences">
-      <span class="nav-icon">⚙️</span> Preferences
-    </a>
-
-    <div class="sidebar-footer">
-      <div class="status-pill">
-        <span class="status-dot"></span>
-        <span id="system-status">Checking…</span>
-      </div>
-    </div>
-  </aside>
-
-  <!-- ── Main Content ───────────────────────────────────── -->
-  <main class="main-content">
-
-    <!-- ── Dashboard Page ─────────────────────────────── -->
-    <div class="page active" id="page-dashboard">
-      <div class="page-header">
-        <h1>Welcome back 👋</h1>
-        <p>Your AI-powered scheduling assistant is ready to help you organize meetings.</p>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">🧠</div>
-          <div class="stat-value" id="system-status" style="font-size:18px;">—</div>
-          <div class="stat-label">System Status</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">📅</div>
-          <div class="stat-value">Google</div>
-          <div class="stat-label">Calendar Provider</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🔔</div>
-          <div class="stat-value">2ch</div>
-          <div class="stat-label">Notification Channels</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">⚡</div>
-          <div class="stat-value">Groq</div>
-          <div class="stat-label">LLM Backend</div>
-        </div>
-      </div>
-
-      <div class="glass-card">
-        <h2 style="font-size:17px;margin-bottom:18px;">Quick Actions</h2>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="navigate('schedule')">📅 Schedule a Meeting</button>
-          <button class="btn btn-secondary" onclick="navigate('chat')">💬 Ask the Assistant</button>
-          <button class="btn btn-secondary" onclick="navigate('preferences')">⚙️ Manage Preferences</button>
-        </div>
-      </div>
-
-      <div class="glass-card" style="margin-top:20px;">
-        <h2 style="font-size:17px;margin-bottom:14px;">How It Works</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
-          <div style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
-            <div style="font-size:22px;margin-bottom:8px;">1️⃣</div>
-            <div style="font-size:13px;font-weight:600;margin-bottom:5px;">Describe Your Meeting</div>
-            <div style="font-size:12px;color:var(--text-2);">Tell the AI what kind of meeting you need in plain language.</div>
-          </div>
-          <div style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
-            <div style="font-size:22px;margin-bottom:8px;">2️⃣</div>
-            <div style="font-size:13px;font-weight:600;margin-bottom:5px;">AI Finds Free Slots</div>
-            <div style="font-size:12px;color:var(--text-2);">The agent checks your Google Calendar for available times.</div>
-          </div>
-          <div style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
-            <div style="font-size:22px;margin-bottom:8px;">3️⃣</div>
-            <div style="font-size:13px;font-weight:600;margin-bottom:5px;">Scheduled & Notified</div>
-            <div style="font-size:12px;color:var(--text-2);">Meeting is created in Calendar, email + WhatsApp sent instantly.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Schedule Meeting Page ───────────────────────── -->
-    <div class="page" id="page-schedule">
-      <div class="page-header">
-        <h1>📅 Schedule a Meeting</h1>
-        <p>Describe your meeting and the AI agent will find the perfect time and schedule it for you.</p>
-      </div>
-
-      <div class="glass-card">
-        <form id="schedule-form" class="form-grid">
-          <div class="form-group">
-            <label for="s-user-id">Your User ID</label>
-            <input type="text" id="s-user-id" placeholder="e.g. john_doe" value="default_user" />
-          </div>
-
-          <div class="form-group">
-            <label for="s-request">Meeting Request *</label>
-            <textarea id="s-request" placeholder='e.g. "Schedule a 30 min standup for tomorrow morning, title it Allright Meeting"' required></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="s-participants">Participants (comma-separated emails or phone numbers)</label>
-            <input type="text" id="s-participants" placeholder="alice@example.com, +91xxxxxxxxxx" />
-          </div>
-
-          <div>
-            <button class="btn btn-primary" id="schedule-btn" type="submit">
-              <div class="spinner"></div>
-              <span class="btn-text">🚀 Schedule Meeting</span>
-            </button>
-          </div>
-        </form>
-
-        <div class="result-box" id="schedule-result"></div>
-      </div>
-
-      <div class="glass-card" style="margin-top:20px;">
-        <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-2);">💡 Try these examples</h3>
-        <div style="display:flex;flex-direction:column;gap:8px;">
-          <button class="btn btn-secondary btn-sm" onclick="fillExample('Schedule a 30 min team standup for tomorrow morning')">Schedule a 30 min team standup for tomorrow morning</button>
-          <button class="btn btn-secondary btn-sm" onclick="fillExample('Book a 1-hour product review with the engineering team next Monday')">Book a 1-hour product review with the engineering team next Monday</button>
-          <button class="btn btn-secondary btn-sm" onclick="fillExample('Set up a quick 15 min 1:1 catch-up for this week')">Set up a quick 15 min 1:1 catch-up for this week</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Chat Page ──────────────────────────────────── -->
-    <div class="page" id="page-chat">
-      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <!-- ── Sidebar ────────────────────────────────────────── -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">🧠</div>
         <div>
-          <h1>💬 Assistant Chat</h1>
-          <p>Talk to the AI agent naturally to schedule meetings.</p>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <label style="font-size:12px;color:var(--text-2);">User ID:</label>
-          <input type="text" id="chat-user-id" value="chat_user"
-            style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--text-1);outline:none;width:140px;" />
+          <div class="brand-title">AI Scheduler</div>
+          <div class="brand-sub">v1.0 · Powered by Groq</div>
         </div>
       </div>
 
-      <div class="glass-card chat-container">
-        <div class="chat-messages" id="chat-messages">
-          <!-- Welcome message -->
-          <div class="chat-msg ai">
-            <div class="chat-avatar">🤖</div>
-            <div class="chat-bubble">
-              Hey there! 👋 I'm your AI meeting assistant.<br>
-              Just tell me what meeting you'd like to schedule — I'll check your calendar and handle everything, including sending notifications!
+      <a class="nav-item active" data-page="dashboard">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a class="nav-item" data-page="schedule">
+        <span class="nav-icon">📅</span> Schedule Meeting
+      </a>
+      <a class="nav-item" data-page="chat">
+        <span class="nav-icon">💬</span> Assistant Chat
+      </a>
+      <a class="nav-item" data-page="preferences">
+        <span class="nav-icon">⚙️</span> Preferences
+      </a>
+
+      <div class="sidebar-footer">
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span id="sidebar-status">Checking…</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Main Content ───────────────────────────────────── -->
+    <main class="main-content">
+
+      <!-- ── Dashboard Page ─────────────────────────────── -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <h1>Welcome back, Mahadev 👋</h1>
+          <p>Your AI-powered scheduling assistant is ready to help you organize meetings.</p>
+        </div>
+
+        <!-- Stats Grid — 5 cards -->
+        <div class="stats-grid">
+
+          <!-- System Status -->
+          <div class="stat-card" id="stat-system">
+            <div class="stat-icon">🟢</div>
+            <div class="stat-value" id="dash-status-text" style="font-size:16px;">All Systems Operational</div>
+            <div class="stat-label">System Status</div>
+            <div class="stat-badge operational" id="dash-status-badge">Operational</div>
+          </div>
+
+          <!-- Google Calendar -->
+          <div class="stat-card" id="stat-calendar">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" style="font-size:17px;">Google Calendar</div>
+            <div class="stat-label">Calendar Provider</div>
+            <div class="stat-badge connected" id="dash-cal-badge">Connected ✅</div>
+          </div>
+
+          <!-- Notification Channels -->
+          <div class="stat-card">
+            <div class="stat-icon">🔔</div>
+            <div class="stat-value" style="font-size:17px;">Email + WhatsApp</div>
+            <div class="stat-label">Active Notifications</div>
+            <div class="stat-badge info">2 Channels</div>
+          </div>
+
+          <!-- AI Engine -->
+          <div class="stat-card">
+            <div class="stat-icon">⚡</div>
+            <div class="stat-value" style="font-size:17px;">AI Engine</div>
+            <div class="stat-label">Groq (Ultra-Fast)</div>
+            <div class="stat-badge info">LLaMA 3.3</div>
+          </div>
+
+          <!-- Today's Overview -->
+          <div class="stat-card stat-card-today" id="stat-today">
+            <div class="stat-icon">🗓️</div>
+            <div class="stat-value" style="font-size:17px;">Today</div>
+            <div class="stat-label" id="today-date"></div>
+            <div class="today-details" id="today-details">
+              <div class="today-row"><span class="today-key">Meetings</span><span class="today-val"
+                  id="today-meetings">—</span></div>
+              <div class="today-row"><span class="today-key">Next</span><span class="today-val" id="today-next">—</span>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="chat-input-row">
-          <textarea id="chat-input" placeholder="Type your meeting request... (Enter to send, Shift+Enter for new line)" rows="1"></textarea>
-          <button class="btn btn-primary" id="chat-send-btn" onclick="sendChat()">
-            <div class="spinner"></div>
-            <span class="btn-text">➤</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Preferences Page ────────────────────────────── -->
-    <div class="page" id="page-preferences">
-      <div class="page-header">
-        <h1>⚙️ Scheduling Preferences</h1>
-        <p>Add your preferences to help the AI schedule better meetings for you.</p>
-      </div>
-
-      <div class="glass-card" style="margin-bottom:20px;">
-        <h2 style="font-size:16px;font-weight:600;margin-bottom:16px;">Add New Preference</h2>
-        <form id="pref-form" class="form-grid">
-          <div class="form-group">
-            <label for="pref-text">Preference *</label>
-            <textarea id="pref-text" rows="2" placeholder='e.g. "I prefer not to have meetings on Fridays after 4 PM"' required></textarea>
-          </div>
-          <div>
-            <button class="btn btn-primary" id="pref-btn" type="submit">
-              <div class="spinner"></div>
-              <span class="btn-text">💾 Save Preference</span>
+        <!-- Quick Actions -->
+        <div class="glass-card">
+          <h2 class="card-title">⚡ Quick Actions</h2>
+          <div class="quick-actions">
+            <button class="btn btn-primary btn-action" onclick="navigate('schedule')">
+              <span class="action-icon">📅</span>
+              <span class="action-text">
+                <strong>Schedule a Meeting</strong>
+                <small>Let AI find the perfect time</small>
+              </span>
+            </button>
+            <button class="btn btn-secondary btn-action" onclick="navigate('chat')">
+              <span class="action-icon">💬</span>
+              <span class="action-text">
+                <strong>Ask the Assistant</strong>
+                <small>Chat naturally with AI</small>
+              </span>
+            </button>
+            <button class="btn btn-secondary btn-action" onclick="navigate('preferences')">
+              <span class="action-icon">⚙️</span>
+              <span class="action-text">
+                <strong>Manage Preferences</strong>
+                <small>Customize your scheduling</small>
+              </span>
             </button>
           </div>
-        </form>
-      </div>
+        </div>
 
-      <div class="glass-card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
-          <h2 style="font-size:16px;font-weight:600;">My Preferences</h2>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <input type="text" id="pref-user-id" value="default_user"
-              style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--text-1);outline:none;width:160px;" />
-            <button class="btn btn-secondary btn-sm" onclick="filterPreferences()">🔍 Load</button>
+        <!-- How It Works -->
+        <div class="glass-card" style="margin-top:20px;">
+          <h2 class="card-title">🚀 How It Works</h2>
+          <div class="how-grid">
+            <div class="how-step">
+              <div class="how-number">1</div>
+              <div class="how-label">Describe Your Meeting</div>
+              <div class="how-desc">Tell the AI what kind of meeting you need in plain language.</div>
+            </div>
+            <div class="how-step">
+              <div class="how-number">2</div>
+              <div class="how-label">AI Finds Free Slots</div>
+              <div class="how-desc">The agent checks your Google Calendar for available times.</div>
+            </div>
+            <div class="how-step">
+              <div class="how-number">3</div>
+              <div class="how-label">Scheduled & Notified</div>
+              <div class="how-desc">Meeting is created in Calendar, email + WhatsApp sent instantly.</div>
+            </div>
           </div>
         </div>
-        <div class="pref-list" id="pref-list">
-          <div class="empty-state"><div class="icon">⏳</div>Loading…</div>
+      </div>
+
+      <!-- ── Schedule Meeting Page ───────────────────────── -->
+      <div class="page" id="page-schedule">
+        <div class="page-header">
+          <h1>📅 Schedule a Meeting</h1>
+          <p>Describe your meeting and the AI agent will find the perfect time and schedule it for you.</p>
+        </div>
+
+        <div class="glass-card">
+          <form id="schedule-form" class="form-grid">
+            <div class="form-group">
+              <label for="s-user-id">Your User ID</label>
+              <input type="text" id="s-user-id" placeholder="e.g. john_doe" value="default_user" />
+            </div>
+
+            <div class="form-group">
+              <label for="s-request">Meeting Request *</label>
+              <textarea id="s-request"
+                placeholder='e.g. "Schedule a 30 min standup for tomorrow morning, title it Allright Meeting"'
+                required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="s-participants">Participants (comma-separated emails or phone numbers)</label>
+              <input type="text" id="s-participants" placeholder="alice@example.com, +91xxxxxxxxxx" />
+            </div>
+
+            <div>
+              <button class="btn btn-primary" id="schedule-btn" type="submit">
+                <div class="spinner"></div>
+                <span class="btn-text">🚀 Schedule Meeting</span>
+              </button>
+            </div>
+          </form>
+
+          <div class="result-box" id="schedule-result"></div>
+        </div>
+
+        <div class="glass-card" style="margin-top:20px;">
+          <h3 style="font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text-2);">💡 Try these examples</h3>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button class="btn btn-secondary btn-sm"
+              onclick="fillExample('Schedule a 30 min team standup for tomorrow morning')">Schedule a 30 min team
+              standup for tomorrow morning</button>
+            <button class="btn btn-secondary btn-sm"
+              onclick="fillExample('Book a 1-hour product review with the engineering team next Monday')">Book a 1-hour
+              product review with the engineering team next Monday</button>
+            <button class="btn btn-secondary btn-sm"
+              onclick="fillExample('Set up a quick 15 min 1:1 catch-up for this week')">Set up a quick 15 min 1:1
+              catch-up for this week</button>
+          </div>
         </div>
       </div>
-    </div>
 
-  </main>
-</div>
+      <!-- ── Chat Page ──────────────────────────────────── -->
+      <div class="page" id="page-chat">
+        <div class="page-header"
+          style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h1>💬 Assistant Chat</h1>
+            <p>Talk to the AI agent naturally to schedule meetings.</p>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <label style="font-size:12px;color:var(--text-2);">User ID:</label>
+            <input type="text" id="chat-user-id" value="chat_user"
+              style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--text-1);outline:none;width:140px;" />
+          </div>
+        </div>
 
-<!-- Toast Container -->
-<div class="toast-container" id="toast-container"></div>
+        <div class="glass-card chat-container">
+          <div class="chat-messages" id="chat-messages">
+            <!-- Welcome message -->
+            <div class="chat-msg ai">
+              <div class="chat-avatar">🤖</div>
+              <div class="chat-bubble">
+                Hey there! 👋 I'm your AI meeting assistant.<br>
+                Just tell me what meeting you'd like to schedule — I'll check your calendar and handle everything,
+                including sending notifications!
+              </div>
+            </div>
+          </div>
 
-<script>
-function fillExample(text) {
-  const el = document.getElementById('s-request');
-  if (el) el.value = text;
-  navigate('schedule');
-}
-</script>
-<script src="/static/js/app.js"></script>
+          <div class="chat-input-row">
+            <textarea id="chat-input"
+              placeholder="Type your meeting request... (Enter to send, Shift+Enter for new line)" rows="1"></textarea>
+            <button class="btn btn-primary" id="chat-send-btn" onclick="sendChat()">
+              <div class="spinner"></div>
+              <span class="btn-text">➤</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Preferences Page ────────────────────────────── -->
+      <div class="page" id="page-preferences">
+        <div class="page-header">
+          <h1>⚙️ Scheduling Preferences</h1>
+          <p>Add your preferences to help the AI schedule better meetings for you.</p>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h2 style="font-size:16px;font-weight:600;margin-bottom:16px;">Add New Preference</h2>
+          <form id="pref-form" class="form-grid">
+            <div class="form-group">
+              <label for="pref-text">Preference *</label>
+              <textarea id="pref-text" rows="2" placeholder='e.g. "I prefer not to have meetings on Fridays after 4 PM"'
+                required></textarea>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="pref-btn" type="submit">
+                <div class="spinner"></div>
+                <span class="btn-text">💾 Save Preference</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="glass-card">
+          <div
+            style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <h2 style="font-size:16px;font-weight:600;">My Preferences</h2>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="text" id="pref-user-id" value="default_user"
+                style="background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:8px;padding:7px 12px;font-size:13px;color:var(--text-1);outline:none;width:160px;" />
+              <button class="btn btn-secondary btn-sm" onclick="filterPreferences()">🔍 Load</button>
+            </div>
+          </div>
+          <div class="pref-list" id="pref-list">
+            <div class="empty-state">
+              <div class="icon">⏳</div>Loading…
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    function fillExample(text) {
+      const el = document.getElementById('s-request');
+      if (el) el.value = text;
+      navigate('schedule');
+    }
+
+    // Set today's date on dashboard
+    (function () {
+      const el = document.getElementById('today-date');
+      if (el) {
+        const d = new Date();
+        el.textContent = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+      }
+    })();
+  </script>
+  <script src="/static/js/app.js"></script>
 </body>
+
 </html>

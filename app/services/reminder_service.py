@@ -182,10 +182,10 @@ async def _send_reminder(
             except Exception:
                 logger.exception("Failed email reminder to %s for event %s", participant, meeting.event_id)
 
-        # WhatsApp reminder
-        if is_phone or is_email:
+        # WhatsApp reminder — only for phone numbers
+        if is_phone:
             try:
-                await send_whatsapp.ainvoke(
+                send_whatsapp.invoke(
                     {
                         "to": participant,
                         "message": f"\u23f0 {meeting.summary} in {time_label}\n{message}",
