@@ -15,13 +15,6 @@
 
 A highly capable GenAI Personal Assistant designed for production environments. Built with **LangGraph**, **FastAPI**, and **APScheduler**, this agent understands natural language commands to manage your calendar, send notifications, and handle emails with enterprise-grade resilience.
 
----
-🚀 Live Demo
-
-Experience the AI-powered scheduling assistant in action — no installation required.
-
-🌐 Live Application:
-👉 https://ai-meeting-scheduler-xlwc.onrender.com
 
 ---
 ## 🌟 Executive Summary
