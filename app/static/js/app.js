@@ -80,27 +80,38 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadDashboard() {
   const userId = document.getElementById('s-user-id')?.value?.trim() || 'default_user';
 
+  // 1. Sidebar Health Check
   try {
-    // 1. Update overall health in sidebar
     const healthRes = await fetch(`${API_BASE}/health`);
     const healthData = await healthRes.json();
     const sidebarEl = document.getElementById('sidebar-status');
-    if (sidebarEl) sidebarEl.textContent = healthData.status === 'ok' ? 'All Systems Online' : 'Check Logs';
+    if (sidebarEl) {
+      sidebarEl.textContent = healthData.status === 'ok' ? 'All Systems Online' : 'Service Check';
+      sidebarEl.className = healthData.status === 'ok' ? 'status-online' : 'status-warning';
+    }
+  } catch (err) {
+    console.warn("Health check failed:", err);
+    const sidebarEl = document.getElementById('sidebar-status');
+    if (sidebarEl) sidebarEl.textContent = 'Connection Error';
+  }
 
-    // 2. Fetch specific dashboard data (preferences + meetings)
-    const dashRes = await fetch(`${API_BASE}/dashboard/${userId}`);
+  // 2. Dashboard Metrics & Meetings
+  try {
+    // CRITICAL: Added /api prefix to the route
+    const dashRes = await fetch(`${API_BASE}/api/dashboard/${userId}`);
+    if (!dashRes.ok) throw new Error(`Server returned ${dashRes.status}`);
     const dashData = await dashRes.json();
 
-    // Update Preference Count Card
-    const prefCountEl = document.getElementById('dash-pref-count');
-    const prefBadge = document.getElementById('dash-pref-badge');
-    if (prefCountEl) prefCountEl.textContent = dashData.preferences.count;
-    if (prefBadge) prefBadge.textContent = `${dashData.preferences.count} Active Rules`;
+    // Update Meeting Count Card
+    const meetingCountEl = document.getElementById('dash-meeting-count');
+    const prefBadge = document.getElementById('dash-pref-count');
+    if (meetingCountEl) meetingCountEl.textContent = dashData.stats?.total_meetings || 0;
+    if (prefBadge) prefBadge.textContent = `${dashData.preferences?.count || 0} Preferences`;
 
     // Update Calendar Connection Badge
     const calBadge = document.getElementById('dash-cal-badge');
     if (calBadge) {
-      const isConnected = dashData.systems.calendar === 'connected';
+      const isConnected = dashData.systems?.calendar === 'connected';
       calBadge.textContent = isConnected ? 'Connected ✅' : 'Not Connected ⚠️';
       calBadge.className = 'stat-badge ' + (isConnected ? 'connected' : 'warning');
     }
@@ -110,12 +121,9 @@ async function loadDashboard() {
 
   } catch (err) {
     console.warn("Dashboard sync failed:", err);
-    const sidebarEl = document.getElementById('sidebar-status');
-    if (sidebarEl) sidebarEl.textContent = 'Offline';
-
     const listEl = document.getElementById('upcoming-meetings-list');
     if (listEl) {
-      listEl.innerHTML = '<div class="empty-meetings">⚠️ Failed to sync with server.</div>';
+      listEl.innerHTML = `<div class="empty-meetings">⚠️ Sync Failed: ${err.message}</div>`;
     }
   }
 }

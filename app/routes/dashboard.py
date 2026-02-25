@@ -9,6 +9,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any
 
 from fastapi import APIRouter
+from sqlalchemy import select, func
 
 from app.config import get_settings
 from app.memory import get_all_preferences
@@ -28,9 +29,12 @@ async def get_dashboard_data(user_id: str) -> dict[str, Any]:
     data = {
         "preferences": {"count": 0},
         "meetings": [],
+        "stats": {
+            "total_meetings": 0
+        },
         "systems": {
             "calendar": "unknown",
-            "database": "unknown"
+            "database": "online"
         }
     }
 
@@ -38,15 +42,23 @@ async def get_dashboard_data(user_id: str) -> dict[str, Any]:
     try:
         prefs = await get_all_preferences(user_id)
         data["preferences"]["count"] = len(prefs)
-        data["systems"]["database"] = "operational"
     except Exception as exc:
         logger.warning("Dashboard: Failed to fetch preferences: %s", exc)
         data["systems"]["database"] = "error"
 
-    # 2. Fetch Upcoming Meetings
+    # 2. Fetch Meeting Count from DB
+    try:
+        from app.database import ScheduledMeetingRow, async_session_factory
+        from sqlalchemy import func
+        async with async_session_factory() as session:
+            res = await session.execute(select(func.count()).select_from(ScheduledMeetingRow).where(ScheduledMeetingRow.user_id == user_id))
+            data["stats"]["total_meetings"] = res.scalar() or 0
+    except Exception as exc:
+        logger.warning("Dashboard: Failed to fetch meeting count: %s", exc)
+
+    # 3. Fetch Upcoming Meetings from Calendar
     try:
         now = datetime.now(timezone.utc)
-        # Fetch meetings for the next 7 days
         future = now + timedelta(days=7)
         
         events = list_events(
@@ -60,11 +72,13 @@ async def get_dashboard_data(user_id: str) -> dict[str, Any]:
             start = event.get("start", {})
             start_str = start.get("dateTime") or start.get("date") or ""
             
-            # Simple parsing for display
             dt = None
             if start_str:
                 try:
-                    dt = datetime.fromisoformat(start_str.replace("Z", "+00:00"))
+                    # Handle Z or offset
+                    if start_str.endswith('Z'):
+                        start_str = start_str.replace('Z', '+00:00')
+                    dt = datetime.fromisoformat(start_str)
                 except:
                     pass
             

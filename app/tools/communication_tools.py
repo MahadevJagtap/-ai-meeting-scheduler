@@ -69,19 +69,35 @@ def send_whatsapp(to: str, message: str) -> str:
         Confirmation with Twilio message SID on success, or error details.
     """
     settings = get_settings()
+    logger.info("Attempting to send WhatsApp message to %s", to)
+    
     try:
+        if not settings.twilio_account_sid or not settings.twilio_auth_token:
+            return "Twilio credentials missing. Please set TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN."
+
         client = TwilioClient(settings.twilio_account_sid, settings.twilio_auth_token)
 
         whatsapp_to = to if to.startswith("whatsapp:") else f"whatsapp:{to}"
+        whatsapp_from = settings.twilio_whatsapp_from
+        
+        if not whatsapp_from.startswith("whatsapp:"):
+            whatsapp_from = f"whatsapp:{whatsapp_from}"
 
         msg = client.messages.create(
             body=message,
-            from_=settings.twilio_whatsapp_from,
+            from_=whatsapp_from,
             to=whatsapp_to,
         )
 
-        logger.info("WhatsApp sent to %s, SID=%s", to, msg.sid)
+        logger.info("✅ WhatsApp sent successfully to %s, SID=%s", to, msg.sid)
         return f"WhatsApp message sent to {to} (SID: {msg.sid})"
     except Exception as exc:
-        logger.exception("Failed to send WhatsApp to %s", to)
-        return f"Failed to send WhatsApp: {exc}"
+        # Capture specific Twilio error details if available
+        error_msg = str(exc)
+        if hasattr(exc, 'code'):
+            error_msg = f"Twilio Error {exc.code}: {exc.msg}"
+            logger.error("🛑 Twilio API Error: %s", error_msg)
+        else:
+            logger.exception("🛑 Failed to send WhatsApp to %s", to)
+            
+        return f"Failed to send WhatsApp: {error_msg}. Check if recipient has joined the Twilio Sandbox by sending 'join {whatsapp_from.split(':')[-1]}' to the sandbox number."

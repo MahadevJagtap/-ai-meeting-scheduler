@@ -58,17 +58,17 @@
       <!-- ── Dashboard Page ─────────────────────────────── -->
       <div class="page active" id="page-dashboard">
         <div class="page-header">
-          <h1>Welcome back, Mahadev 👋</h1>
+          <h1>Welcome back 👋</h1>
           <p>Your AI-powered scheduling assistant is ready to help you organize meetings.</p>
         </div>
 
         <div class="stats-grid">
-          <!-- Personal Context (Replacing System Status) -->
+          <!-- Scheduled Meetings (Replacing Personal Context) -->
           <div class="stat-card">
-            <div class="stat-icon">🧠</div>
-            <div class="stat-value" id="dash-pref-count">—</div>
-            <div class="stat-label">Personal Context</div>
-            <div class="stat-badge info" id="dash-pref-badge">Saved Preferences</div>
+            <div class="stat-icon">📈</div>
+            <div class="stat-value" id="dash-meeting-count">0</div>
+            <div class="stat-label">Total Scheduled</div>
+            <div class="stat-badge info" id="dash-pref-count">0 Preferences</div>
           </div>
 
           <!-- Calendar Provider -->
@@ -84,14 +84,14 @@
             <div class="stat-icon">🔔</div>
             <div class="stat-value">Email + WhatsApp</div>
             <div class="stat-label">Active Notifications</div>
-            <div class="stat-badge info">2 Channels</div>
+            <div class="stat-badge info" id="dash-notif-channels">2 Channels</div>
           </div>
 
           <!-- AI Engine -->
           <div class="stat-card">
-            <div class="stat-icon">🚀</div>
-            <div class="stat-value">AI Engine</div>
-            <div class="stat-label">Groq (Ultra-Fast)</div>
+            <div class="stat-icon">🧠</div>
+            <div class="stat-value">Groq (Fast)</div>
+            <div class="stat-label">AI Intelligence</div>
             <div class="stat-badge info">LLaMA 3.3</div>
           </div>
         </div>
