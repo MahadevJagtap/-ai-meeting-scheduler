@@ -105,7 +105,7 @@ app.include_router(chat_router)
 # ── Health Check ──────────────────────────────────────────────
 
 
-@app.get("/health", tags=["system"])
+@app.api_route("/health", methods=["GET", "HEAD"], tags=["system"])
 async def health_check():
     """Lightweight liveness probe for uptime monitoring (e.g. UptimeRobot)."""
     return {"status": "ok"}
