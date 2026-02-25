@@ -8,7 +8,14 @@
 An advanced, multi-agent autonomous scheduling system designed for seamless calendar orchestration. This project leverages state-of-the-art Generative AI to transform natural language requests into production-ready calendar events, complete with automated multi-channel notifications and context-aware memory.
 
 ---
+🚀 Live Demo
 
+Experience the AI-powered scheduling assistant in action — no installation required.
+
+🌐 Live Application:
+👉 https://ai-personal-assistant-3xni.onrender.com
+
+---
 ## 🌟 Executive Summary
 
 Traditional scheduling tools require manual input and rigid forms. This agentic personal assistant utilizes **LangGraph** to maintain a stateful, cyclical reasoning loop, allowing it to:
