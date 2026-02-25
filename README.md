@@ -1,90 +1,112 @@
+# 🤖 AI Meeting Scheduler — Enterprise-Grade Autonomous Assistant
 
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![LangGraph](https://img.shields.io/badge/orchestration-LangGraph-orange.svg)](https://github.com/langchain-ai/langgraph)
+[![Groq](https://img.shields.io/badge/llm-Groq%20LLaMA%203.3-green.svg)](https://groq.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<!-- Frontend: http://localhost:8000/
-API Docs: http://localhost:8000/docs
-Health: http://localhost:8000/health
+An advanced, multi-agent autonomous scheduling system designed for seamless calendar orchestration. This project leverages state-of-the-art Generative AI to transform natural language requests into production-ready calendar events, complete with automated multi-channel notifications and context-aware memory.
 
-Comment
-Ctrl+Alt+M
-# AI Meeting Scheduler -->
+---
 
-Multi-agent autonomous meeting scheduling system powered by **LangGraph**, **FastAPI**, **PostgreSQL/pgvector**, **OpenAI gpt-4o**, **Google Calendar**, **Twilio**, and **SMTP**.
+## 🌟 Executive Summary
 
-## Architecture
+Traditional scheduling tools require manual input and rigid forms. This agentic personal assistant utilizes **LangGraph** to maintain a stateful, cyclical reasoning loop, allowing it to:
+- **Parse Intent**: Extract complex scheduling requirements from raw text.
+- **Analyze Availability**: Cross-reference Google Calendar free/busy windows.
+- **Enforce Preferences**: Apply saved user behavior patterns (e.g., "no meetings before 10 AM").
+- **Deliver Confirmations**: Execute immediate notification delivery via WhatsApp and Email.
 
+## 🧠 Advanced Agentic Architecture
+
+The system is built on a modular **LangGraph** orchestrator, ensuring predictable execution flows and robust error recovery.
+
+```mermaid
+graph TD
+    A[User Request] --> B{Agentic Router}
+    B -->|Intent Found| C[Context Engine]
+    C -->|RAG| D[(Memory Layer)]
+    C -->|API| E[Google Calendar]
+    B -->|Synthesis| F[Slot Optimizer]
+    F -->|Conflict?| B
+    F -->|Success| G[Action Executor]
+    G --> H[Calendar Event]
+    G --> I[WhatsApp Twilio]
+    G --> J[Email SMTP]
+    G --> K[APScheduler Reminders]
 ```
-User Request (NL)
-       │
-  ┌────▼──────────┐
-  │ analyze_request│  ← gpt-4o parses intent
-  └────┬──────────┘
-  ┌────▼───────────┐
-  │retrieve_context │  ← Google Calendar + pgvector RAG
-  └────┬───────────┘
-  ┌────▼───────────┐
-  │synthesize_slots │  ← gpt-4o ranks slots by preferences
-  └────┬───────────┘     ↑ retry loop on conflicts
-  ┌────▼────────────────┐
-  │execute_scheduling    │  ← Creates event + sends notifications
-  └────┬────────────────┘
-       │
-  [Email + WhatsApp confirmations]
-  [APScheduler: 24h + 15min reminders]
-```
 
-## Quick Start
+### Key Engineering Highlights:
+- **Stateful Memory**: Utilizes a persistent memory layer to store and retrieve user scheduling preferences for hyper-personalized output.
+- **Autonomous Reminders**: Integrated **APScheduler** background service for 24-hour and 10-minute automated notification triggers.
+- **Graceful Degradation**: Production-hardened with circuit-breaker patterns for external APIs (Calendar, Database, Messaging).
 
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Role |
+|-----------|------------|------|
+| **AI Orchestration** | [LangGraph](https://github.com/langchain-ai/langgraph) | Stateful multi-agent workflow |
+| **LLM Provider** | [Groq (LLaMA 3.3 70B)](https://groq.com/) | Ultra-fast reasoning & function calling |
+| **API Framework** | [FastAPI](https://fastapi.tiangolo.com/) | High-performance async backend |
+| **Frontend** | Vanilla JS / Glassmorphism CSS | Visual dashboard & metrics |
+| **Database** | PostgreSQL / SQLAlchemy | Persistent state & user context |
+| **Integrations** | Google Calendar v3, Twilio, SMTP | External service orchestration |
+
+---
+
+## 🚀 Production Hardening
+
+This project is engineered for more than just a demonstration. It includes professional-grade stability features:
+- **Thread-Safe I/O**: High-latency Twilio calls are offloaded to optimized thread pools via `anyio`.
+- **Diagnostic Dashboard**: Real-time health monitoring and sync status for all internal systems.
+- **Naive UTC Synchronization**: Robust timezone handling to prevent scheduling drift across global environments.
+- **Detailed Telemetry**: Structured logging for rapid debugging of communication failures (WhatsApp/Email).
+
+---
+
+## ⚡ Quick Start
+
+### 1. Environment Preparation
 ```bash
-# 1. Clone & setup
-cd pa
+# Clone the repository
+git clone https://github.com/MahadevJagtap/-ai-meeting-scheduler.git
+cd ai-meeting-scheduler
+
+# Initialize virtual environment
 python -m venv venv
-venv\Scripts\activate      # Windows
+source venv/bin/activate  # Or venv\Scripts\activate on Windows
+
+# Install dependencies
 pip install -r requirements.txt
-
-# 2. Configure environment
-copy .env.example .env
-# Edit .env with your API keys
-
-# 3. Start PostgreSQL with pgvector
-# Ensure PostgreSQL is running with the pgvector extension
-
-# 4. Run the server
-uvicorn app.main:app --reload --port 8000
 ```
 
-## API Endpoints
+### 2. Configuration
+Create a `.env` file based on the provided logic. Key requirements:
+- `GROQ_API_KEY`: For LLaMA 3.3 reasoning.
+- `DATABASE_URL`: Async PostgreSQL connection string.
+- `TWILIO_ACCOUNT_SID`: For WhatsApp notifications.
+- `GOOGLE_CALENDAR_CREDENTIALS_JSON`: Inline JSON for cloud authentication.
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/schedule` | Schedule a meeting via NL request |
-| `POST` | `/api/preferences` | Add a user preference |
-| `GET` | `/api/preferences/{user_id}` | List user preferences |
-| `DELETE` | `/api/preferences/{id}` | Remove a preference |
-| `GET` | `/health` | Health check |
-| `GET` | `/docs` | Swagger UI |
-
-## Example Request
-
+### 3. Execution
 ```bash
-curl -X POST http://localhost:8000/api/schedule \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_id": "user_123",
-    "request_text": "Schedule a 45-minute bug triage with alice@company.com tomorrow morning, it is urgent",
-    "participants": ["alice@company.com"]
-  }'
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-## Environment Variables
+---
 
-See [.env.example](.env.example) for all required configuration.
+## 📈 Dashboard Features
 
-## Tech Stack
+The modern Glassmorphism frontend provides critical observability:
+- **System Health**: Sidebar indicators for service status.
+- **Scheduled Meetings**: Live metrics for agent productivity.
+- **Upcoming Feed**: Real-time sync with Google Calendar.
+- **Personal Context**: Visual count of active scheduling rules.
 
-- **Agent Framework**: LangGraph (stateful, cyclical graph)
-- **LLM**: OpenAI gpt-4o (function calling + text generation)
-- **Backend**: FastAPI + Uvicorn
-- **Database**: PostgreSQL + pgvector (RAG memory)
-- **Calendar**: Google Calendar API v3
-- **Messaging**: Twilio (WhatsApp) + aiosmtplib (Email)
-- **Scheduler**: APScheduler (async autonomous reminders)
+---
+
+## 👨‍💻 Engineering Team
+**Senior AI Engineer & Architect**: Managed via agentic workflow.
+
+*"Building the future of autonomous personal assistants, one agent at a time."*
