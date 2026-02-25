@@ -13,7 +13,7 @@ An advanced, multi-agent autonomous scheduling system designed for seamless cale
 Experience the AI-powered scheduling assistant in action — no installation required.
 
 🌐 Live Application:
-👉 https://ai-personal-assistant-3xni.onrender.com
+👉 https://ai-meeting-scheduler-xlwc.onrender.com
 
 ---
 ## 🌟 Executive Summary
