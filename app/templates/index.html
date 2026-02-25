@@ -62,21 +62,19 @@
           <p>Your AI-powered scheduling assistant is ready to help you organize meetings.</p>
         </div>
 
-        <!-- Stats Grid — 5 cards -->
         <div class="stats-grid">
-
           <!-- System Status -->
-          <div class="stat-card" id="stat-system">
-            <div class="stat-icon">🟢</div>
-            <div class="stat-value" id="dash-status-text" style="font-size:16px;">All Systems Operational</div>
+          <div class="stat-card">
+            <div class="stat-icon">🧠</div>
+            <div class="stat-value" id="dash-status-text">All Systems Operational</div>
             <div class="stat-label">System Status</div>
             <div class="stat-badge operational" id="dash-status-badge">Operational</div>
           </div>
 
-          <!-- Google Calendar -->
-          <div class="stat-card" id="stat-calendar">
+          <!-- Calendar Provider -->
+          <div class="stat-card">
             <div class="stat-icon">📅</div>
-            <div class="stat-value" style="font-size:17px;">Google Calendar</div>
+            <div class="stat-value">Google Calendar</div>
             <div class="stat-label">Calendar Provider</div>
             <div class="stat-badge connected" id="dash-cal-badge">Connected ✅</div>
           </div>
@@ -84,7 +82,7 @@
           <!-- Notification Channels -->
           <div class="stat-card">
             <div class="stat-icon">🔔</div>
-            <div class="stat-value" style="font-size:17px;">Email + WhatsApp</div>
+            <div class="stat-value">Email + WhatsApp</div>
             <div class="stat-label">Active Notifications</div>
             <div class="stat-badge info">2 Channels</div>
           </div>
@@ -92,71 +90,50 @@
           <!-- AI Engine -->
           <div class="stat-card">
             <div class="stat-icon">⚡</div>
-            <div class="stat-value" style="font-size:17px;">AI Engine</div>
+            <div class="stat-value">AI Engine</div>
             <div class="stat-label">Groq (Ultra-Fast)</div>
             <div class="stat-badge info">LLaMA 3.3</div>
           </div>
-
-          <!-- Today's Overview -->
-          <div class="stat-card stat-card-today" id="stat-today">
-            <div class="stat-icon">🗓️</div>
-            <div class="stat-value" style="font-size:17px;">Today</div>
-            <div class="stat-label" id="today-date"></div>
-            <div class="today-details" id="today-details">
-              <div class="today-row"><span class="today-key">Meetings</span><span class="today-val"
-                  id="today-meetings">—</span></div>
-              <div class="today-row"><span class="today-key">Next</span><span class="today-val" id="today-next">—</span>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <!-- Quick Actions -->
         <div class="glass-card">
-          <h2 class="card-title">⚡ Quick Actions</h2>
-          <div class="quick-actions">
-            <button class="btn btn-primary btn-action" onclick="navigate('schedule')">
-              <span class="action-icon">📅</span>
-              <span class="action-text">
-                <strong>Schedule a Meeting</strong>
-                <small>Let AI find the perfect time</small>
-              </span>
-            </button>
-            <button class="btn btn-secondary btn-action" onclick="navigate('chat')">
-              <span class="action-icon">💬</span>
-              <span class="action-text">
-                <strong>Ask the Assistant</strong>
-                <small>Chat naturally with AI</small>
-              </span>
-            </button>
-            <button class="btn btn-secondary btn-action" onclick="navigate('preferences')">
-              <span class="action-icon">⚙️</span>
-              <span class="action-text">
-                <strong>Manage Preferences</strong>
-                <small>Customize your scheduling</small>
-              </span>
-            </button>
+          <h2 style="font-size:17px;margin-bottom:18px;">Quick Actions</h2>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="navigate('schedule')">📅 Schedule a Meeting</button>
+            <button class="btn btn-secondary" onclick="navigate('chat')">💬 Ask the Assistant</button>
+            <button class="btn btn-secondary" onclick="navigate('preferences')">⚙️ Manage Preferences</button>
           </div>
         </div>
 
-        <!-- How It Works -->
         <div class="glass-card" style="margin-top:20px;">
-          <h2 class="card-title">🚀 How It Works</h2>
-          <div class="how-grid">
-            <div class="how-step">
-              <div class="how-number">1</div>
-              <div class="how-label">Describe Your Meeting</div>
-              <div class="how-desc">Tell the AI what kind of meeting you need in plain language.</div>
+          <h2 style="font-size:17px;margin-bottom:14px;">How It Works</h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;">
+            <div
+              style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
+              <div
+                style="background:var(--accent);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:bold;margin-bottom:10px;">
+                1</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:5px;">Describe Your Meeting</div>
+              <div style="font-size:12px;color:var(--text-2);">Tell the AI what kind of meeting you need in plain
+                language.</div>
             </div>
-            <div class="how-step">
-              <div class="how-number">2</div>
-              <div class="how-label">AI Finds Free Slots</div>
-              <div class="how-desc">The agent checks your Google Calendar for available times.</div>
+            <div
+              style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
+              <div
+                style="background:var(--accent);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:bold;margin-bottom:10px;">
+                2</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:5px;">AI Finds Free Slots</div>
+              <div style="font-size:12px;color:var(--text-2);">The agent checks your Google Calendar for available
+                times.</div>
             </div>
-            <div class="how-step">
-              <div class="how-number">3</div>
-              <div class="how-label">Scheduled & Notified</div>
-              <div class="how-desc">Meeting is created in Calendar, email + WhatsApp sent instantly.</div>
+            <div
+              style="padding:14px;background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;">
+              <div
+                style="background:var(--accent);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:bold;margin-bottom:10px;">
+                3</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:5px;">Scheduled & Notified</div>
+              <div style="font-size:12px;color:var(--text-2);">Meeting is created in Calendar, email + WhatsApp sent
+                instantly.</div>
             </div>
           </div>
         </div>
@@ -271,7 +248,7 @@
             </div>
             <div>
               <button class="btn btn-primary" id="pref-btn" type="submit">
-                <div class="spinner"></div>
+                <div class="spinner:"></div>
                 <span class="btn-text">💾 Save Preference</span>
               </button>
             </div>
@@ -308,15 +285,6 @@
       if (el) el.value = text;
       navigate('schedule');
     }
-
-    // Set today's date on dashboard
-    (function () {
-      const el = document.getElementById('today-date');
-      if (el) {
-        const d = new Date();
-        el.textContent = d.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
-      }
-    })();
   </script>
   <script src="/static/js/app.js"></script>
 </body>
