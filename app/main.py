@@ -50,8 +50,8 @@ async def lifespan(app: FastAPI):
     try:
         await init_db()
         logger.info("✅ Database initialized")
-    except Exception:
-        logger.exception("⚠️  Database initialization failed (will continue)")
+    except Exception as exc:
+        logger.error("⚠️  Database initialization failed: %s — preferences will be unavailable", exc)
 
     # Start the APScheduler for autonomous reminders
     try:
