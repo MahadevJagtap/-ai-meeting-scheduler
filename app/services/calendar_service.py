@@ -95,21 +95,36 @@ def _get_calendar_service():
 
         creds_info = json.loads(actual_json)
 
-        # Service Account
+        # ── Detect credential type ────────────────────────
+
+        # Type A: Service Account
         if creds_info.get("type") == "service_account":
             credentials = service_account.Credentials.from_service_account_info(
                 creds_info, scopes=SCOPES
             )
             return build("calendar", "v3", credentials=credentials)
 
-        # OAuth Client ID (installed / web)
+        # Type B: OAuth2 Token (from token.json — has 'token' and 'refresh_token')
+        if "token" in creds_info and "refresh_token" in creds_info:
+            creds = Credentials.from_authorized_user_info(creds_info, SCOPES)
+            if creds and creds.expired and creds.refresh_token:
+                try:
+                    creds.refresh(Request())
+                    logger.info("OAuth2 token refreshed successfully from env var")
+                except Exception as exc:
+                    logger.warning("Failed to refresh OAuth2 token from env var: %s", exc)
+            if creds and creds.valid:
+                return build("calendar", "v3", credentials=creds)
+            else:
+                logger.warning("OAuth2 token from env var is invalid/expired and could not be refreshed")
+                return None
+
+        # Type C: OAuth Client ID (installed / web) — needs a separate token
         if "installed" in creds_info or "web" in creds_info:
             if not _calendar_unavailable_logged:
                 logger.warning(
-                    "OAuth2 Client ID detected but 'token.json' is missing. "
-                    "Run setup_calendar_oauth.py locally to authorise, then "
-                    "paste the token JSON into the GOOGLE_CALENDAR_TOKEN_JSON env var. "
-                    "Calendar features will be unavailable."
+                    "OAuth2 Client ID detected but no token available. "
+                    "Set GOOGLE_CALENDAR_CREDENTIALS_JSON to the token.json content instead."
                 )
                 _calendar_unavailable_logged = True
             return None
