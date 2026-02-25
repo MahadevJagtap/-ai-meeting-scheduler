@@ -99,6 +99,10 @@ async def _list_upcoming_meetings() -> str:
             lines.append(f"• **{e.get('summary', 'Untitled')}** — {start_str}")
 
         return "\n".join(lines)
+    except RuntimeError as exc:
+        # Calendar not configured (graceful degradation from calendar_service)
+        logger.warning("Calendar listing unavailable: %s", exc)
+        return "📅 Calendar is not connected yet. Please configure Google Calendar credentials to view your meetings."
     except Exception as exc:
         logger.warning("Calendar list failed: %s", exc)
         return f"⚠️ Could not load calendar events: {exc}"
