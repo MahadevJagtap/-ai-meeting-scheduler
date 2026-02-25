@@ -78,42 +78,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
 /* ── Dashboard ────────────────────────────────────────────── */
 async function loadDashboard() {
+  const userId = document.getElementById('s-user-id')?.value?.trim() || 'default_user';
+
   try {
-    const res = await fetch(`${API_BASE}/health`);
-    const data = await res.json();
-    const isOnline = data.status === 'ok';
-
-    // Sidebar status
+    // 1. Update overall health in sidebar
+    const healthRes = await fetch(`${API_BASE}/health`);
+    const healthData = await healthRes.json();
     const sidebarEl = document.getElementById('sidebar-status');
-    if (sidebarEl) sidebarEl.textContent = isOnline ? 'All Systems Online' : 'Service Degraded';
+    if (sidebarEl) sidebarEl.textContent = healthData.status === 'ok' ? 'All Systems Online' : 'Check Logs';
 
-    // Dashboard status card
-    const statusText = document.getElementById('dash-status-text');
-    const statusBadge = document.getElementById('dash-status-badge');
-    if (statusText) {
-      statusText.textContent = isOnline ? 'All Systems Operational' : 'Service Degraded';
-    }
-    if (statusBadge) {
-      statusBadge.textContent = isOnline ? 'Operational' : 'Degraded';
-      statusBadge.className = 'stat-badge ' + (isOnline ? 'operational' : 'warning');
-    }
-    // Calendar badge
+    // 2. Fetch specific dashboard data (preferences + meetings)
+    const dashRes = await fetch(`${API_BASE}/dashboard/${userId}`);
+    const dashData = await dashRes.json();
+
+    // Update Preference Count Card
+    const prefCountEl = document.getElementById('dash-pref-count');
+    const prefBadge = document.getElementById('dash-pref-badge');
+    if (prefCountEl) prefCountEl.textContent = dashData.preferences.count;
+    if (prefBadge) prefBadge.textContent = `${dashData.preferences.count} Active Rules`;
+
+    // Update Calendar Connection Badge
     const calBadge = document.getElementById('dash-cal-badge');
     if (calBadge) {
-      calBadge.textContent = isOnline ? 'Connected ✅' : 'Checking…';
-      calBadge.className = 'stat-badge ' + (isOnline ? 'connected' : 'info');
+      const isConnected = dashData.systems.calendar === 'connected';
+      calBadge.textContent = isConnected ? 'Connected ✅' : 'Not Connected ⚠️';
+      calBadge.className = 'stat-badge ' + (isConnected ? 'connected' : 'warning');
     }
-  } catch {
+
+    // Render Upcoming Meetings
+    renderMeetingList(dashData.meetings);
+
+  } catch (err) {
+    console.warn("Dashboard sync failed:", err);
     const sidebarEl = document.getElementById('sidebar-status');
     if (sidebarEl) sidebarEl.textContent = 'Offline';
-    const statusText = document.getElementById('dash-status-text');
-    if (statusText) statusText.textContent = 'Unreachable';
-    const statusBadge = document.getElementById('dash-status-badge');
-    if (statusBadge) {
-      statusBadge.textContent = 'Offline';
-      statusBadge.className = 'stat-badge error';
+
+    const listEl = document.getElementById('upcoming-meetings-list');
+    if (listEl) {
+      listEl.innerHTML = '<div class="empty-meetings">⚠️ Failed to sync with server.</div>';
     }
   }
+}
+
+function renderMeetingList(meetings) {
+  const listEl = document.getElementById('upcoming-meetings-list');
+  if (!listEl) return;
+
+  if (!meetings || meetings.length === 0) {
+    listEl.innerHTML = '<div class="empty-meetings">📅 No upcoming meetings found for the next 7 days.</div>';
+    return;
+  }
+
+  listEl.innerHTML = meetings.map(m => `
+    <div class="meeting-item" onclick="window.open('${m.link}', '_blank')">
+      <div class="meeting-date-box">
+        <span class="meeting-day">${m.display_month}</span>
+        <span class="meeting-num">${m.display_day}</span>
+      </div>
+      <div class="meeting-info">
+        <div class="meeting-title">${m.summary}</div>
+        <div class="meeting-time">🕑 ${m.display_time} (UTC)</div>
+      </div>
+    </div>
+  `).join('');
 }
 
 /* ── Schedule Page ────────────────────────────────────────── */

@@ -63,12 +63,12 @@
         </div>
 
         <div class="stats-grid">
-          <!-- System Status -->
+          <!-- Personal Context (Replacing System Status) -->
           <div class="stat-card">
             <div class="stat-icon">🧠</div>
-            <div class="stat-value" id="dash-status-text">All Systems Operational</div>
-            <div class="stat-label">System Status</div>
-            <div class="stat-badge operational" id="dash-status-badge">Operational</div>
+            <div class="stat-value" id="dash-pref-count">—</div>
+            <div class="stat-label">Personal Context</div>
+            <div class="stat-badge info" id="dash-pref-badge">Saved Preferences</div>
           </div>
 
           <!-- Calendar Provider -->
@@ -89,12 +89,21 @@
 
           <!-- AI Engine -->
           <div class="stat-card">
-            <div class="stat-icon">⚡</div>
+            <div class="stat-icon">🚀</div>
             <div class="stat-value">AI Engine</div>
             <div class="stat-label">Groq (Ultra-Fast)</div>
             <div class="stat-badge info">LLaMA 3.3</div>
           </div>
         </div>
+
+        <!-- Upcoming Meetings Section -->
+        <div class="upcoming-section">
+          <h2 style="font-size:17px; margin-bottom:12px;">Upcoming Meetings</h2>
+          <div id="upcoming-meetings-list" class="meeting-list">
+            <div class="empty-meetings">📅 Loading meetings…</div>
+          </div>
+        </div>
+
 
         <div class="glass-card">
           <h2 style="font-size:17px;margin-bottom:18px;">Quick Actions</h2>

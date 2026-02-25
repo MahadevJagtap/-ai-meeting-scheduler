@@ -25,6 +25,7 @@ from app.database import init_db
 from app.routes.chat import router as chat_router
 from app.routes.preferences import router as preferences_router
 from app.routes.scheduling import router as scheduling_router
+from app.routes.dashboard import router as dashboard_router
 from app.services.reminder_service import start_scheduler, stop_scheduler
 
 # ── Logging ───────────────────────────────────────────────────
@@ -100,6 +101,7 @@ templates = Jinja2Templates(directory=os.path.join(_BASE_DIR, "templates"))
 app.include_router(scheduling_router)
 app.include_router(preferences_router)
 app.include_router(chat_router)
+app.include_router(dashboard_router)
 
 
 # ── Health Check ──────────────────────────────────────────────
